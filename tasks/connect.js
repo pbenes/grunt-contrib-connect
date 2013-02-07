@@ -20,6 +20,7 @@ module.exports = function(grunt) {
 
     // Merge task-specific options with these defaults.
     var options = this.options({
+      protocol: 'http',
       port: 8000,
       hostname: 'localhost',
       base: '.',
@@ -33,6 +34,11 @@ module.exports = function(grunt) {
         ];
       }
     });
+
+    if (options.protocol !== 'http' && options.protocol !== 'https')
+    {
+      grunt.fail.warn("'http' and 'https' are the only valid protocol options");
+    }
 
     // Connect requires the base path to be absolute.
     options.base = path.resolve(options.base);
@@ -49,7 +55,8 @@ module.exports = function(grunt) {
     // Start server.
     grunt.log.writeln('Starting connect web server on ' + options.hostname + ':' + options.port + '.');
 
-    connect.apply(null, middleware)
+    var app = connect.apply(null, middleware);
+    require(options.protocol).createServer(options, app)
       .listen(options.port, options.hostname)
       .on('error', function(err) {
         if (err.code === 'EADDRINUSE') {

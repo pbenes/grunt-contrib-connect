@@ -8,7 +8,12 @@
 
 'use strict';
 
+var fs = require('fs');
+var path = require('path');
+
 module.exports = function(grunt) {
+  var testPath = path.join(__dirname, 'test');
+
   grunt.initConfig({
     jshint: {
       all: [
@@ -35,6 +40,15 @@ module.exports = function(grunt) {
         options: {
           port: 9000,
         },
+      },
+      custom_https: {
+        options: {
+          protocol:   'https',
+          key:        fs.readFileSync(path.join(testPath, 'server.key')).toString(),
+          cert:       fs.readFileSync(path.join(testPath, 'server.crt')).toString(),
+          ca:         fs.readFileSync(path.join(testPath, 'ca.crt')).toString(),
+          passphrase: 'grunt'
+        }
       },
       custom_middleware: {
         options: {
